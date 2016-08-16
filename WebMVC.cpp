@@ -1,6 +1,6 @@
 #include "WebMVC.h"
 
-//#define DEBUGGING
+#define DEBUGGING
 
 // Request parameters
 const char GET[] PROGMEM = "GET ";
@@ -19,10 +19,10 @@ const char HD_END[] PROGMEM = "\nConnection: close\n\n";
 #define ERROR_INVALID_METHOD 2
 
 WebDispatcher::WebDispatcher(EthernetServer &_server) :
-		server(_server) {
+		server(&_server) {
 }
 
-void WebDispatcher::setRoutes(WebRoute routes_PGM[], uint8_t numRoutes) {
+void WebDispatcher::setRoutes(const WebRoute routes_PGM[], uint8_t numRoutes) {
 	this->routes_P = routes_PGM;
 	this->numRoutes = numRoutes;
 }
@@ -156,15 +156,18 @@ void WebDispatcher::processClient(EthernetClient &client) {
   uint16_t d=0;
 #endif
 void WebDispatcher::process() {
+	if (EthernetClient client = server->available()) {
 #ifdef DEBUGGING
-	if (d++>50000) {d=0; Serial.print('w');}
+		Serial.print('c');
 #endif
-	if (EthernetClient client = server.available()) {
 		if (client) {
 			processClient(client);
 			client.stop();
 		} // end if client
 	} // end if server available
+#ifdef DEBUGGING
+	else if (d++>40000) {d=0; Serial.print('w');}
+#endif
 }
 
 void WebDispatcher::sendHeader(WebRequest &request) const {

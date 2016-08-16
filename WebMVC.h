@@ -3,10 +3,10 @@
 
 #include <Arduino.h>
 #include <UIPEthernet.h>
-#include <UIPServer.h>
+/*#include <UIPServer.h>
 #include <UIPClient.h>
 #include <ethernet_comp.h>
-
+*/
 // HTTP METHOD Constants
 #define METHOD_UNKNOWN 0
 #define METHOD_GET 1
@@ -46,9 +46,9 @@ typedef struct {
 
 class WebDispatcher {
 private:
-  EthernetServer server;
+  EthernetServer *server;
   uint8_t numRoutes;
-  WebRoute *routes_P;
+  const WebRoute *routes_P;
   
   uint8_t processRequest(WebRequest &request);
   void processClient(EthernetClient &client);
@@ -57,7 +57,7 @@ public:
   /* pode ser criado na funcao setup() ou, se necessário, dentro de outra funcao chamada no loop 
   para economizar memoria para outras funcoes, porem, gastando tempo de processando. */
   WebDispatcher(EthernetServer &_server);
-  void setRoutes(WebRoute routes_PGM[], uint8_t numRoutes);
+  void setRoutes(const WebRoute routes_PGM[], uint8_t numRoutes);
 
   /* process() - Precisa ser chamado na funcao loop() do arduino */
   void process();
